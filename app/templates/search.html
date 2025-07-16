@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}検索 - 感情日記{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header text-center">
+                <h5 class="mb-0">🔍 検索条件</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET">
+                    <div class="mb-4">
+                        {{ form.sentiment.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--primary-gradient); color: white; border: none;">
+                                😊
+                            </span>
+                            {{ form.sentiment(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.tag.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--warning-gradient); color: white; border: none;">
+                                #
+                            </span>
+                            {{ form.tag(class="form-control", placeholder="タグ名を入力") }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            🔍 検索する
+                        </button>
+                        <a href="{{ url_for('main.search') }}" class="btn btn-outline-secondary">
+                            🔄 クリア
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <div class="card-body text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">💡</div>
+                <h6 class="fw-bold mb-2">検索のヒント</h6>
+                <small class="text-muted">
+                    感情で絞り込んだり、<br>
+                    「学校」「友人」などのタグで<br>
+                    過去の日記を見つけよう
+                </small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h3 style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                📋 検索結果
+            </h3>
+            {% if entries %}
+                <span class="badge" style="background: var(--success-gradient); font-size: 1rem; padding: 8px 16px;">
+                    {{ entries|length }}件見つかりました
+                </span>
+            {% endif %}
+        </div>
+        
+        {% if entries %}
+            {% for entry in entries %}
+            <div class="card mb-4 diary-entry">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="diary-date">
+                            📅 {{ entry.date.strftime('%Y年%m月%d日') }}
+                        </div>
+                        <span class="sentiment-{{ entry.sentiment.lower() }}">
+                            {% if entry.sentiment == 'Positive' %}😊 ポジティブ
+                            {% elif entry.sentiment == 'Negative' %}😔 ネガティブ
+                            {% else %}😐 ニュートラル
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="diary-content mb-3">
+                        {{ entry.content[:200] }}{% if entry.content|length > 200 %}...{% endif %}
+                    </div>
+                    
+                    {% if entry.tags %}
+                    <div class="mb-3">
+                        {% for tag in entry.get_tags_list() %}
+                            <span class="tag"># {{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            🕒 {{ entry.created_at.strftime('%H:%M') }}
+                        </small>
+                        <a href="{{ url_for('main.view_entry', id=entry.id) }}" class="btn btn-sm btn-outline-primary">
+                            📖 詳細を見る
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            {% if request.args.get('sentiment') or request.args.get('tag') %}
+                <div class="card text-center" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                    <div class="card-body py-5">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🔍</div>
+                        <h4 class="mb-3">検索結果が見つかりませんでした</h4>
+                        <p class="mb-4">
+                            検索条件を変更して再度お試しください。<br>
+                            または新しい日記を書いてみましょう！
+                        </p>
+                        <div class="d-flex gap-2 justify-content-center">
+                            <a href="{{ url_for('main.search') }}" class="btn btn-outline-primary">
+                                🔄 検索をクリア
+                            </a>
+                            <a href="{{ url_for('main.write_diary') }}" class="btn btn-success">
+                                ✍️ 日記を書く
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card text-center" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white;">
+                    <div class="card-body py-5">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🎯</div>
+                        <h4 class="mb-3">検索条件を入力してください</h4>
+                        <p class="mb-4">
+                            感情やタグで過去の日記を検索できます。<br>
+                            あなたの思い出を振り返ってみましょう！
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

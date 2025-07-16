@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}ログイン - 感情日記{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-5">
+        <div class="text-center mb-5">
+            <div style="font-size: 5rem; margin-bottom: 1rem;">📖</div>
+            <h1 style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                感情日記
+            </h1>
+            <p class="text-muted">AIが感情を分析する日記アプリ</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">🔐 ログイン</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-4">
+                        {{ form.username.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--primary-gradient); color: white; border: none;">
+                                👤
+                            </span>
+                            {{ form.username(class="form-control", placeholder="ユーザー名を入力") }}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        {{ form.password.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--primary-gradient); color: white; border: none;">
+                                🔒
+                            </span>
+                            {{ form.password(class="form-control", placeholder="パスワードを入力") }}
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            🚀 ログイン
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <div class="border-top pt-3">
+                        <p class="text-muted mb-2">アカウントをお持ちでない方</p>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">
+                            ✨ 新規登録
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <div class="card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                <div class="card-body py-3">
+                    <small class="text-muted">
+                        🔒 あなたの日記は完全にプライベートです<br>
+                        🤖 AI機能で感情分析とタグ自動生成
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

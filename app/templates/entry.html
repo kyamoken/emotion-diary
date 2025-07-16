@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.date.strftime('%Y年%m月%d日') }}の日記 - 感情日記{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <!-- ヘッダー部分 -->
+        <div class="text-center mb-4">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">📖</div>
+            <h2 style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                {{ entry.date.strftime('%Y年%m月%d日') }}の日記
+            </h2>
+        </div>
+        
+        <!-- メイン日記カード -->
+        <div class="card diary-entry mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center">
+                    <div style="font-size: 1.5rem; margin-right: 0.5rem;">📅</div>
+                    <h4 class="mb-0">{{ entry.date.strftime('%Y年%m月%d日 (%A)') }}</h4>
+                </div>
+                <span class="sentiment-{{ entry.sentiment.lower() }} mt-2 mt-md-0">
+                    {% if entry.sentiment == 'Positive' %}😊 ポジティブ
+                    {% elif entry.sentiment == 'Negative' %}😔 ネガティブ
+                    {% else %}😐 ニュートラル
+                    {% endif %}
+                </span>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- 日記内容 -->
+                <div class="diary-content-full mb-4">
+                    <div style="background: rgba(255,255,255,0.7); padding: 2rem; border-radius: 15px; border-left: 4px solid var(--primary-gradient);">
+                        <p style="white-space: pre-wrap; line-height: 1.8; font-size: 1.1rem; color: #2d3436; margin: 0;">{{ entry.content }}</p>
+                    </div>
+                </div>
+                
+                <!-- タグセクション -->
+                {% if entry.tags %}
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div style="font-size: 1.5rem; margin-right: 0.5rem;">#</div>
+                        <h6 class="mb-0 fw-bold">関連タグ</h6>
+                    </div>
+                    <div class="tags-container">
+                        {% for tag in entry.get_tags_list() %}
+                            <span class="tag me-2 mb-2"># {{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- メタ情報 -->
+                <div class="row mt-4 pt-3 border-top">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center text-muted">
+                            <div style="font-size: 1.2rem; margin-right: 0.5rem;">🕒</div>
+                            <small>作成: {{ entry.created_at.strftime('%Y年%m月%d日 %H:%M') }}</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <div class="d-flex align-items-center justify-content-md-end text-muted">
+                            <div style="font-size: 1.2rem; margin-right: 0.5rem;">📝</div>
+                            <small>{{ entry.content|length }}文字</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- アクションボタン -->
+        <div class="d-flex gap-3 justify-content-center mb-4">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary btn-lg px-4">
+                🏠 ホームに戻る
+            </a>
+            <a href="{{ url_for('main.search') }}" class="btn btn-outline-primary btn-lg px-4">
+                🔍 他の日記を探す
+            </a>
+            <a href="{{ url_for('main.write_diary') }}" class="btn btn-success btn-lg px-4">
+                ✍️ 新しい日記を書く
+            </a>
+        </div>
+        
+        <!-- AI分析情報カード -->
+        <div class="card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <div class="card-body text-center py-4">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
+                <h6 class="fw-bold mb-2">AI分析結果</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <strong>感情分析:</strong><br>
+                            <span class="sentiment-{{ entry.sentiment.lower() }} d-inline-block mt-1">
+                                {% if entry.sentiment == 'Positive' %}😊 ポジティブ
+                                {% elif entry.sentiment == 'Negative' %}😔 ネガティブ
+                                {% else %}😐 ニュートラル
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <strong>自動タグ:</strong><br>
+                            <small class="text-muted">
+                                {% if entry.tags %}
+                                    {{ entry.get_tags_list()|length }}個のタグを生成
+                                {% else %}
+                                    タグなし
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.diary-content-full {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.tags-container {
+    animation: fadeInUp 1s ease-out;
+}
+
+@media (max-width: 768px) {
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .sentiment-positive, .sentiment-negative, .sentiment-neutral {
+        margin-top: 1rem;
+        align-self: flex-start;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

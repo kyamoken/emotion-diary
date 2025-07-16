@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}新規登録 - 感情日記{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6">
+        <div class="text-center mb-5">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✨</div>
+            <h1 style="background: var(--secondary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                感情日記を始めよう
+            </h1>
+            <p class="text-muted">AIと一緒にあなたの感情を記録しましょう</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">📝 新規登録</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        {{ form.username.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--primary-gradient); color: white; border: none;">
+                                👤
+                            </span>
+                            {{ form.username(class="form-control", placeholder="4文字以上のユーザー名") }}
+                        </div>
+                        {% for error in form.username.errors %}
+                            <div class="text-danger mt-2">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.email.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--success-gradient); color: white; border: none;">
+                                📧
+                            </span>
+                            {{ form.email(class="form-control", placeholder="your@email.com") }}
+                        </div>
+                        {% for error in form.email.errors %}
+                            <div class="text-danger mt-2">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.password.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--warning-gradient); color: white; border: none;">
+                                🔒
+                            </span>
+                            {{ form.password(class="form-control", placeholder="6文字以上のパスワード") }}
+                        </div>
+                        {% for error in form.password.errors %}
+                            <div class="text-danger mt-2">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.password2.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text" style="background: var(--danger-gradient); color: white; border: none;">
+                                🔐
+                            </span>
+                            {{ form.password2(class="form-control", placeholder="パスワードを再入力") }}
+                        </div>
+                        {% for error in form.password2.errors %}
+                            <div class="text-danger mt-2">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            🎉 アカウント作成
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <div class="border-top pt-3">
+                        <p class="text-muted mb-2">既にアカウントをお持ちの方</p>
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary">
+                            🔐 ログイン
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card text-center" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);">
+                    <div class="card-body py-3">
+                        <div style="font-size: 2rem; color: white;">🤖</div>
+                        <small class="text-white fw-bold">AI感情分析</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center" style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);">
+                    <div class="card-body py-3">
+                        <div style="font-size: 2rem; color: white;">#</div>
+                        <small class="text-white fw-bold">自動タグ付け</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-center" style="background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);">
+                    <div class="card-body py-3">
+                        <div style="font-size: 2rem; color: white;">🔒</div>
+                        <small class="text-white fw-bold">完全プライベート</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

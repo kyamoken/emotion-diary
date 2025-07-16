@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}日記を書く - 感情日記{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="text-center mb-4">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">✍️</div>
+            <h2 style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">
+                今日の気持ちを記録しよう
+            </h2>
+            <p class="text-muted">AIがあなたの感情を分析し、自動でタグを付けます</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header text-center">
+                <h3 class="mb-0">📝 日記を書く</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="diaryForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        {{ form.date.label(class="form-label fw-bold") }}
+                        {{ form.date(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.content.label(class="form-label fw-bold") }}
+                        {{ form.content(class="form-control", style="min-height: 200px;") }}
+                        {% for error in form.content.errors %}
+                            <div class="text-danger mt-2">
+                                <i class="fas fa-exclamation-circle"></i> {{ error }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-text">
+                            💡 今日あった出来事や感じたことを自由に書いてください
+                        </div>
+                    </div>
+                    
+                    <div class="alert" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; border: none;">
+                        <div class="d-flex align-items-center">
+                            <div style="font-size: 2rem; margin-right: 1rem;">🤖</div>
+                            <div>
+                                <strong>AI機能が有効です</strong><br>
+                                <small>
+                                    保存時に自動で感情分析（😊ポジティブ/😔ネガティブ/😐ニュートラル）を行い、
+                                    内容に基づいてタグ（#学校 #友人 #趣味など）を生成します。
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-primary btn-lg px-5" id="saveBtn">
+                            <span class="btn-text">💾 保存する</span>
+                            <span class="loading d-none"></span>
+                        </button>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary btn-lg px-4">
+                            ← 戻る
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 書き方のヒント -->
+        <div class="card mt-4" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3">💡 日記を書くヒント</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">📅 今日の出来事</li>
+                            <li class="mb-2">💭 感じたこと</li>
+                            <li class="mb-2">🎯 学んだこと</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">🌟 嬉しかったこと</li>
+                            <li class="mb-2">😰 困ったこと</li>
+                            <li class="mb-2">🔮 明日への想い</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('diaryForm').addEventListener('submit', function() {
+    const saveBtn = document.getElementById('saveBtn');
+    const btnText = saveBtn.querySelector('.btn-text');
+    const loading = saveBtn.querySelector('.loading');
+    
+    btnText.classList.add('d-none');
+    loading.classList.remove('d-none');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="loading"></span> AI分析中...';
+});
+</script>
+{% endblock %}

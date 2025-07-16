@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex align-items-center mb-4">
+            <h2 class="mb-0" style="background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">✨ 最近の日記</h2>
+        </div>
+        
+        {% if entries %}
+            {% for entry in entries %}
+            <div class="card mb-4 diary-entry">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="diary-date">
+                            📅 {{ entry.date.strftime('%Y年%m月%d日') }}
+                        </div>
+                        <span class="sentiment-{{ entry.sentiment.lower() }}">
+                            {% if entry.sentiment == 'Positive' %}😊 ポジティブ
+                            {% elif entry.sentiment == 'Negative' %}😔 ネガティブ
+                            {% else %}😐 ニュートラル
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="diary-content mb-3">
+                        {{ entry.content[:200] }}{% if entry.content|length > 200 %}...{% endif %}
+                    </div>
+                    
+                    {% if entry.tags %}
+                    <div class="mb-3">
+                        {% for tag in entry.get_tags_list() %}
+                            <span class="tag"># {{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            🕒 {{ entry.created_at.strftime('%H:%M') }}
+                        </small>
+                        <a href="{{ url_for('main.view_entry', id=entry.id) }}" class="btn btn-sm btn-outline-primary">
+                            📖 詳細を見る
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card text-center" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                <div class="card-body py-5">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">📝</div>
+                    <h4 class="mb-3">まだ日記がありません</h4>
+                    <p class="mb-4">あなたの最初の感情日記を書いてみましょう！<br>AIが感情分析とタグ付けを自動で行います。</p>
+                    <a href="{{ url_for('main.write_diary') }}" class="btn btn-success btn-lg">
+                        ✍️ 最初の日記を書く
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">🔍 検索</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('main.search') }}">
+                    <div class="mb-3">
+                        {{ search_form.sentiment.label(class="form-label") }}
+                        {{ search_form.sentiment(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ search_form.tag.label(class="form-label") }}
+                        {{ search_form.tag(class="form-control") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        🔍 検索する
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <div class="card-body text-center">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+                <h5 class="mb-3">新しい日記を書く</h5>
+                <p class="mb-3">今日の気持ちを記録しましょう</p>
+                <a href="{{ url_for('main.write_diary') }}" class="btn btn-success w-100">
+                    ✍️ 日記を書く
+                </a>
+            </div>
+        </div>
+        
+        <div class="card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+            <div class="card-body text-center">
+                <div style="font-size: 2.5rem; margin-bottom: 1rem;">🤖</div>
+                <h6 class="mb-2">AI機能</h6>
+                <small class="text-muted">
+                    感情分析とタグ自動生成で<br>
+                    あなたの日記をより豊かに
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

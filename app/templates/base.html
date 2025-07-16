@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}感情日記{% endblock %}</title>
+    
+    <!-- PWA対応 -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="感情日記">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon-192.png') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-gradient: linear-gradient(135deg, #434343 0%, #000000 100%);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --card-hover-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* ナビゲーション */
+        .navbar {
+            background: var(--primary-gradient) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 20px;
+            margin: 0 5px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* カード */
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-hover-shadow);
+        }
+        
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 1.5rem;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        /* 感情表示 */
+        .sentiment-positive { 
+            background: var(--success-gradient);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .sentiment-negative { 
+            background: var(--danger-gradient);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
+        }
+        
+        .sentiment-neutral { 
+            background: var(--dark-gradient);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(67, 67, 67, 0.3);
+        }
+        
+        /* タグ */
+        .tag { 
+            background: var(--warning-gradient);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin: 3px;
+            display: inline-block;
+            font-weight: 500;
+            box-shadow: 0 3px 10px rgba(67, 233, 123, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+        }
+        
+        /* ボタン */
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background: var(--success-gradient);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white), var(--primary-gradient);
+            background-clip: padding-box, border-box;
+            color: #667eea;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* フォーム */
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
+        }
+        
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        /* アラート */
+        .alert {
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+        }
+        
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* 日記エントリー特別スタイル */
+        .diary-entry {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .diary-entry::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+        }
+        
+        .diary-date {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 0.5rem;
+        }
+        
+        .diary-content {
+            line-height: 1.7;
+            color: #636e72;
+            font-size: 1rem;
+        }
+        
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .container { padding: 0 15px; }
+            .card { margin-bottom: 1.5rem; }
+            .navbar-brand { font-size: 1.2rem; }
+            .nav-link { padding: 0.5rem; margin: 0 2px; }
+            textarea { min-height: 120px; }
+            .btn { margin-bottom: 0.5rem; width: 100%; }
+            .card-body { padding: 1.5rem; }
+        }
+        
+        @media (max-width: 576px) {
+            .col-md-4, .col-md-8 { 
+                margin-bottom: 1rem; 
+            }
+            .d-flex.justify-content-between {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+            .sentiment-positive, .sentiment-negative, .sentiment-neutral {
+                margin-top: 0.5rem;
+            }
+            .navbar-nav {
+                text-align: center;
+            }
+            .nav-link {
+                margin: 5px 0;
+            }
+        }
+        
+        /* PWA用のスタイル */
+        @media (display-mode: standalone) {
+            body { padding-top: env(safe-area-inset-top); }
+            .navbar { padding-top: calc(env(safe-area-inset-top) + 0.5rem); }
+        }
+        
+        /* ローディングアニメーション */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">
+                <span style="font-size: 1.2rem;">📖</span> 感情日記
+            </a>
+            {% if current_user.is_authenticated %}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('main.write_diary') }}">
+                        <span class="d-lg-none">✍️ </span>日記を書く
+                    </a>
+                    <a class="nav-link" href="{{ url_for('main.search') }}">
+                        <span class="d-lg-none">🔍 </span>検索
+                    </a>
+                    <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                        <span class="d-lg-none">🚪 </span>ログアウト
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/static/sw.js')
+                    .then(function(registration) {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(function(registrationError) {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
